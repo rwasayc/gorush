@@ -16,7 +16,7 @@ func InitWorkers(ctx context.Context, wg *sync.WaitGroup, workerNum int64, queue
 }
 
 // SendNotification is send message to iOS or Android
-func SendNotification(req PushNotification) {
+func SendNotification(req PushNotification) bool {
 	if PushConf.Core.Sync {
 		defer req.WaitDone()
 	}
@@ -26,11 +26,16 @@ func SendNotification(req PushNotification) {
 	default:
 		switch req.Platform {
 		case PlatFormIos:
-			PushToIOS(req)
+			return PushToIOS(req)
 		case PlatFormAndroid:
-			PushToAndroid(req)
+			if req.ProjectID == "" {
+				return PushToAndroid(req)
+			} else {
+				return PushToAndroidSDK(req)
+			}
 		}
 	}
+	return false
 }
 
 func startWorker(ctx context.Context, wg *sync.WaitGroup, num int64) {

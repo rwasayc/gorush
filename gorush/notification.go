@@ -3,6 +3,7 @@ package gorush
 import (
 	"context"
 	"errors"
+	"firebase.google.com/go/messaging"
 	"net/http"
 	"net/url"
 	"os"
@@ -71,15 +72,19 @@ type PushNotification struct {
 	Retry            int         `json:"retry,omitempty"`
 
 	// Android
-	APIKey                string            `json:"api_key,omitempty"`
-	To                    string            `json:"to,omitempty"`
-	CollapseKey           string            `json:"collapse_key,omitempty"`
-	DelayWhileIdle        bool              `json:"delay_while_idle,omitempty"`
-	TimeToLive            *uint             `json:"time_to_live,omitempty"`
-	RestrictedPackageName string            `json:"restricted_package_name,omitempty"`
-	DryRun                bool              `json:"dry_run,omitempty"`
-	Condition             string            `json:"condition,omitempty"`
-	Notification          *fcm.Notification `json:"notification,omitempty"`
+	APIKey                string                         `json:"api_key,omitempty"`
+	To                    string                         `json:"to,omitempty"`
+	CollapseKey           string                         `json:"collapse_key,omitempty"`
+	DelayWhileIdle        bool                           `json:"delay_while_idle,omitempty"`
+	TimeToLive            *uint                          `json:"time_to_live,omitempty"`
+	RestrictedPackageName string                         `json:"restricted_package_name,omitempty"`
+	DryRun                bool                           `json:"dry_run,omitempty"`
+	Condition             string                         `json:"condition,omitempty"`
+	Notification          *fcm.Notification              `json:"notification,omitempty"`
+	MNotification         *messaging.AndroidNotification `json:"m_notification,omitempty"`
+	ProjectID             string                         `json:"project_id,omitempty"`
+	CredentialsFile       string                         `json:"credentials_file,omitempty"`
+	CredentialsJSON       string                         `json:"credentials_json,omitempty"`
 
 	// iOS
 	Expiration  *int64   `json:"expiration,omitempty"`
@@ -144,11 +149,11 @@ func CheckMessage(req PushNotification) error {
 		return errors.New(msg)
 	}
 
-	if req.Platform == PlatFormAndroid && len(req.Tokens) > 1000 {
-		msg = "the message may specify at most 1000 registration IDs"
-		LogAccess.Debug(msg)
-		return errors.New(msg)
-	}
+	//if req.Platform == PlatFormAndroid && len(req.Tokens) > 1000 {
+	//	msg = "the message may specify at most 1000 registration IDs"
+	//	LogAccess.Debug(msg)
+	//	return errors.New(msg)
+	//}
 
 	// ref: https://firebase.google.com/docs/cloud-messaging/http-server-ref
 	if req.Platform == PlatFormAndroid && req.TimeToLive != nil && (*req.TimeToLive < uint(0) || uint(2419200) < *req.TimeToLive) {

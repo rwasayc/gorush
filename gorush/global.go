@@ -1,6 +1,7 @@
 package gorush
 
 import (
+	"firebase.google.com/go/messaging"
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/storage"
 
@@ -18,6 +19,8 @@ var (
 	ApnsClient *apns2.Client
 	// FCMClient is apns client
 	FCMClient *fcm.Client
+	// MessagingClient is Messaging client
+	FCMSDKClient *messaging.Client
 	// LogAccess is log server request log
 	LogAccess *logrus.Logger
 	// LogError is log server error log
